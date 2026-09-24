@@ -121,11 +121,15 @@ export function isOnMountedVolume(path: string, mountedVolumes?: string[]): bool
 }
 
 export function directorySize(dir: string, { timeoutMs }: { timeoutMs?: number } = {}): number {
+  return measuredDirectorySize(dir, { timeoutMs }) ?? 0;
+}
+
+export function measuredDirectorySize(dir: string, { timeoutMs }: { timeoutMs?: number } = {}): number | null {
   let out: string;
   try {
     out = getExecutor().runFile('du', ['-sk', dir], { timeoutMs });
   } catch {
-    return 0;
+    return null;
   }
   if (!out) return 0;
   const kb = parseInt(out.split(/\s+/)[0] ?? '', 10);
